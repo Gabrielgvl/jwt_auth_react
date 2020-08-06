@@ -1,6 +1,6 @@
 {
-  "name": "jwt_auth_react",
-  "version": "0.1.0",
+  "name": "@gabrielgvl/jwt_auth_react",
+  "version": "0.1.1",
   "dependencies": {
     "jwt-decode": "^2.2.0",
     "react": "^16.13.1",
