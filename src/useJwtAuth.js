@@ -4,8 +4,8 @@ import {
   handleLogOut,
   handleSetUserInfo,
   LOG_IN,
-  LOG_OUT, SET_TOKEN,
-  SET_USER_INFO, setToken,
+  LOG_OUT,
+  SET_USER_INFO,
 } from './authStore';
 import PropTypes from 'prop-types';
 
@@ -16,7 +16,7 @@ const initialState = (token) => ({
   userInfo: null,
   isLogin: false,
   cache: {},
-  token: '',
+  token,
 });
 
 const jwtAuthReducer = (state, action) => {
@@ -27,8 +27,6 @@ const jwtAuthReducer = (state, action) => {
       return handleLogIn(state, action.payload);
     case LOG_OUT:
       return handleLogOut(state);
-    case SET_TOKEN:
-      return setToken(state, action.payload);
     default:
       return state;
   }
@@ -38,13 +36,6 @@ const jwtAuthReducer = (state, action) => {
 
 export const JwtAuthProvider = ({ children, keyPrefix, jwtToken }) => {
   const [state, dispatch] = useReducer(jwtAuthReducer, initialState(`${keyPrefix}:${jwtToken}`));
-
-  useEffect(() => {
-    dispatch({
-      type: SET_TOKEN,
-      payload: {keyPrefix, jwtToken}
-    })
-  }, [keyPrefix, jwtToken])
 
   return (
     <JwtAuthContext.Provider value={[state, dispatch]}>
