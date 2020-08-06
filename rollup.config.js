@@ -1,8 +1,10 @@
 import babel from 'rollup-plugin-babel';
+import typescript from 'rollup-plugin-typescript2';
+import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json';
 
 export default {
-    input: 'src/index.js',
+    input: 'src/index.tsx',
     output: [
         {
             file: pkg.main,
@@ -13,11 +15,9 @@ export default {
         }
     ],
     plugins: [
-        babel({
-            exclude: 'node_modules/**',
-            presets: ['@babel/env', '@babel/preset-react']
-        }),
+        commonjs(),
+        babel(),
+        typescript({ objectHashIgnoreUnknownHack: false })
     ],
-
     external: ['react', 'react-dom']
 }
