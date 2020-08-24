@@ -1,6 +1,6 @@
 {
   "name": "@gabrielgvl/jwt_auth_react",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/index.js",
   "peerDependencies": {
     "react": "^16.13.1",
