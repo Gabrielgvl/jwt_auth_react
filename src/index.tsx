@@ -8,6 +8,7 @@ import {
     LOG_IN,
     LOG_OUT,
     SET_USER_INFO,
+    GET_TOKEN, getToken,
 } from './authStore';
 
 const JwtAuthContext = createContext();
@@ -28,6 +29,8 @@ const jwtAuthReducer = (state, action) => {
             return handleLogIn(state, action.payload);
         case LOG_OUT:
             return handleLogOut(state);
+        case GET_TOKEN:
+            return getToken(state);
         default:
             return state;
     }
@@ -59,6 +62,7 @@ interface UseJwtAuthReturn {
     setUserInfo: () => void,
     logIn: (token) => void,
     logOut: () => void,
+    getToken: () => void,
     handleLogin: (token, effect?) => void,
     isLoggedIn: Boolean,
     isLogin: Boolean,
@@ -94,11 +98,18 @@ const useJwtAuth: React.FC = () : UseJwtAuthReturn => {
         effect();
     };
 
+    const getToken = () => {
+        dispatch({
+            type: GET_TOKEN,
+        })
+    }
+
     return {
         setUserInfo,
         logIn,
         logOut,
         handleLogin,
+        getToken,
         isLoggedIn: state.isLoggedIn,
         isLogin: state.isLogin,
         userInfo: state.userInfo,
