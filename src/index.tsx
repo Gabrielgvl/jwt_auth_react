@@ -35,7 +35,7 @@ const jwtAuthReducer = (state, action) => {
 
 /* Export a component to provide the context to its children. This is used in our _app.js file */
 
-export interface JwtAuthInterface {
+interface JwtAuthInterface {
     children: Node,
     keyPrefix: String,
     jwtToken?: String,
@@ -55,7 +55,7 @@ JwtAuthProvider.defaultProps = {
     jwtToken: 'token',
 }
 
-export interface UseJwtAuthReturn {
+interface UseJwtAuthReturn {
     setUserInfo: () => void,
     logIn: (token) => void,
     logOut: () => void,
