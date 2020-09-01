@@ -1,0 +1,58 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "airbnb"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint", "react-hooks", "jsx-a11y", "import"
+    ],
+    "rules": {
+        "react/jsx-filename-extension": [
+            "error",
+            {
+                "extensions": [".js", ".jsx", ".tsx", ".ts"]
+            }
+        ],
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never",
+                "": "never"
+            }
+        ],
+        "global-require": "off",
+        "no-plusplus": "off",
+        "import/prefer-default-export": "off",
+        "consistent-return": "off",
+        "no-useless-return": "off",
+        "import/no-unresolved": "off",
+        "react/forbid-prop-types": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "react/prop-types": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-member-accessibility": "off",
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/ban-ts-ignore": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error"
+    }
+}
