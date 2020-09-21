@@ -1,6 +1,6 @@
 import React from 'react';
 interface JwtAuthInterface {
-    children: Node;
+    children: React.ReactNode;
     keyPrefix: String;
     jwtToken?: String;
 }

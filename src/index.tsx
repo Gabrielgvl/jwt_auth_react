@@ -44,7 +44,7 @@ const jwtAuthReducer = (state, action) => {
 };
 
 interface JwtAuthInterface {
-    children: Node,
+    children: React.ReactNode,
     keyPrefix: String,
     jwtToken?: String,
 }
