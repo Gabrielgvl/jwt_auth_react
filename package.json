@@ -1,7 +1,11 @@
 {
   "name": "@gabrielgvl/jwt_auth_react",
-  "version": "1.0.6",
-  "main": "dist/index.tsx",
+  "version": "1.0.7",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "peerDependencies": {
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
@@ -12,7 +16,8 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "start": "rollup -c -w"
+    "start": "rollup -c -w",
+    "prepublish": "rm -rf ./dist && yarn build"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.11.0",
@@ -52,9 +57,6 @@
     "hooks",
     "react",
     "store"
-  ],
-  "files": [
-    "dist"
   ],
   "author": "Gabriel Vinhaes",
   "license": "MIT",
