@@ -15,8 +15,15 @@ export default {
     },
   ],
   plugins: [
-    commonjs(),
-    babel(),
+    babel({
+      exclude: 'node_modules/**',
+      presets: ['@babel/preset-env', '@babel/preset-react'],
+      plugins: ['@babel/plugin-transform-react-jsx', '@babel/plugin-transform-react-jsx-self',
+        '@babel/plugin-proposal-object-rest-spread'],
+    }),
+    commonjs({
+      include: ['src', 'node_modules/**'],
+    }),
     typescript({ objectHashIgnoreUnknownHack: false }),
   ],
   external: ['react', 'react-dom'],

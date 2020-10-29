@@ -1,15 +1,14 @@
 import React from 'react';
-interface JwtAuthInterface {
+export interface JwtAuthInterface {
     children: React.ReactNode;
-    keyPrefix: String;
-    jwtToken?: String;
+    keyPrefix: string;
 }
 export declare const JwtAuthProvider: React.FC<JwtAuthInterface>;
-interface UseJwtAuthReturn {
+export interface UseJwtAuthReturn {
     setUserInfo: () => void;
     logIn: (token: any) => void;
     logOut: () => void;
-    token: String | null;
+    token: string | null;
     handleLogin: (token: any, effect?: any) => void;
     isLoggedIn: Boolean;
     isLogin: Boolean;
