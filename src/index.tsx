@@ -41,7 +41,6 @@ function useJWT<T = any>(): UseJwtAuthReturn<T> {
 
   const getUserInfo = () => {
     const token = localStorage.getItem(keyPrefix);
-    console.debug(token)
     if (token){
       try {
         return jwtDecode(token)

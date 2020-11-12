@@ -112,7 +112,6 @@ function useJWT() {
     };
     const getUserInfo = () => {
         const token = localStorage.getItem(keyPrefix);
-        console.debug(token);
         if (token) {
             try {
                 return lib(token);
