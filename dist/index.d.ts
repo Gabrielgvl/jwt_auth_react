@@ -4,15 +4,12 @@ export interface JwtAuthInterface {
     keyPrefix: string;
 }
 export declare const JwtAuthProvider: React.FC<JwtAuthInterface>;
-export interface UseJwtAuthReturn {
-    setUserInfo: () => void;
-    logIn: (token: any) => void;
+export interface UseJwtAuthReturn<T> {
+    logIn: (token: string) => void;
     logOut: () => void;
     token: string | null;
-    handleLogin: (token: any, effect?: any) => void;
-    isLoggedIn: Boolean;
-    isLogin: Boolean;
-    userInfo: {};
+    isLoggedIn: boolean;
+    userInfo: T;
 }
-declare const useJwtAuth: () => UseJwtAuthReturn;
-export default useJwtAuth;
+declare function useJWT<T = any>(): UseJwtAuthReturn<T>;
+export default useJWT;

@@ -5,31 +5,6 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var React = require('react');
 var React__default = _interopDefault(React);
 
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-
-function __awaiter(thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-}
-
 /**
  * The code was extracted from:
  * https://github.com/davidchambers/Base64.js
@@ -125,91 +100,37 @@ var lib = function (token,options) {
 var InvalidTokenError_1 = InvalidTokenError;
 lib.InvalidTokenError = InvalidTokenError_1;
 
-const GET_USER_INFO = 'SET_USER_INFO';
-const LOG_IN = 'LOG_IN';
-const LOG_OUT = 'LOG_OUT';
-function handleSetUserInfo(state) {
-    const token = localStorage.getItem(state.token);
-    return Object.assign(Object.assign({}, state), { userInfo: lib(token) });
-}
-function handleLogIn(state, { token }) {
-    const { payload: userInfo } = lib(token);
-    localStorage.setItem(state.token, token);
-    return Object.assign(Object.assign({}, state), { isLoggedIn: true, isLogin: true, userInfo: Object.assign({}, userInfo) });
-}
-function handleLogOut(state) {
-    localStorage.removeItem(state.token);
-    return Object.assign(Object.assign({}, state), { isLoggedIn: false });
-}
-
-const initialState = (token = "") => ({
-    isLoggedIn: !!localStorage.getItem(token),
-    userInfo: null,
-    isLogin: false,
-    cache: {},
-    token,
-});
-const JwtAuthContext = React.createContext(initialState());
-const jwtAuthReducer = (state, action) => {
-    switch (action.type) {
-        case GET_USER_INFO:
-            return handleSetUserInfo(state);
-        case LOG_IN:
-            return handleLogIn(state, action.payload);
-        case LOG_OUT:
-            return handleLogOut(state);
-        default:
-            return state;
-    }
-};
-const JwtAuthProvider = ({ children, keyPrefix }) => {
-    const [state, dispatch] = React.useReducer(jwtAuthReducer, initialState(keyPrefix));
-    return (
-    // @ts-ignore
-    React__default.createElement(JwtAuthContext.Provider, { value: [state, dispatch] }, children));
-};
-const useJwtAuth = () => {
-    const [state, dispatch] = React.useContext(JwtAuthContext);
-    const setUserInfo = () => {
-        dispatch({
-            type: GET_USER_INFO,
-        });
-    };
+const jwtAuthContext = React.createContext({ keyPrefix: 'jwtToken' });
+const JwtAuthProvider = ({ children, keyPrefix }) => (React__default.createElement(jwtAuthContext.Provider, { value: { keyPrefix } }, children));
+function useJWT() {
+    const { keyPrefix } = React.useContext(jwtAuthContext);
     const logIn = (token) => {
-        dispatch({
-            type: LOG_IN,
-            payload: {
-                token,
-            },
-        });
+        localStorage.setItem(keyPrefix, token);
     };
     const logOut = () => {
-        dispatch({
-            type: LOG_OUT,
-        });
+        localStorage.removeItem(keyPrefix);
     };
-    const handleLogin = (token, effect = () => { }) => __awaiter(void 0, void 0, void 0, function* () {
-        logIn(token);
-        effect();
-    });
     const getUserInfo = () => {
-        const token = localStorage.getItem(state.token);
+        const token = localStorage.getItem(keyPrefix);
+        console.debug(token);
         if (token) {
-            return lib(token);
+            try {
+                return lib(token);
+            }
+            catch (e) {
+                console.error("Could not parse token: " + token);
+            }
         }
     };
     return {
-        setUserInfo,
         logIn,
         logOut,
-        handleLogin,
-        token: localStorage.getItem(state.token),
-        isLoggedIn: state.isLoggedIn,
-        isLogin: state.isLogin,
+        token: localStorage.getItem(keyPrefix),
+        isLoggedIn: !!localStorage.getItem(keyPrefix),
         userInfo: getUserInfo(),
     };
-};
+}
 
 exports.JwtAuthProvider = JwtAuthProvider;
-exports.default = useJwtAuth;
+exports.default = useJWT;
 //# sourceMappingURL=index.js.map
