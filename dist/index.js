@@ -100,34 +100,39 @@ var lib = function (token,options) {
 var InvalidTokenError_1 = InvalidTokenError;
 lib.InvalidTokenError = InvalidTokenError_1;
 
-const jwtAuthContext = React.createContext({ keyPrefix: 'jwtToken' });
-const JwtAuthProvider = ({ children, keyPrefix }) => (React__default.createElement(jwtAuthContext.Provider, { value: { keyPrefix } }, children));
-function useJWT() {
-    const { keyPrefix } = React.useContext(jwtAuthContext);
-    const logIn = (token) => {
-        localStorage.setItem(keyPrefix, token);
-    };
-    const logOut = () => {
+const defaultState = {
+    logIn: () => null,
+    logOut: () => null,
+    token: null,
+    isLoggedIn: false,
+};
+const JwtAuthContext = React.createContext(defaultState);
+const JwtAuthProvider = ({ children, keyPrefix }) => {
+    const [token, setToken] = React.useState(localStorage.getItem(keyPrefix));
+    const [isLoggedIn, setLoggedIn] = React.useState(!!localStorage.getItem(keyPrefix));
+    const [userInfo, setUserInfo] = React.useState(() => (token ? lib(token) : {}));
+    const logIn = React.useCallback((accessToken) => {
+        localStorage.setItem(keyPrefix, accessToken);
+        setToken(accessToken);
+        setLoggedIn(true);
+        setUserInfo(lib(accessToken));
+    }, [keyPrefix]);
+    const logOut = React.useCallback(() => {
         localStorage.removeItem(keyPrefix);
-    };
-    const getUserInfo = () => {
-        const token = localStorage.getItem(keyPrefix);
-        if (token) {
-            try {
-                return lib(token);
-            }
-            catch (e) {
-                console.error("Could not parse token: " + token);
-            }
-        }
-    };
-    return {
+        setToken(null);
+        setLoggedIn(false);
+    }, [keyPrefix]);
+    const initialState = {
         logIn,
         logOut,
-        token: localStorage.getItem(keyPrefix),
-        isLoggedIn: !!localStorage.getItem(keyPrefix),
-        userInfo: getUserInfo(),
+        token,
+        isLoggedIn,
+        userInfo,
     };
+    return (React__default.createElement(JwtAuthContext.Provider, { value: initialState }, children));
+};
+function useJWT() {
+    return React.useContext(JwtAuthContext);
 }
 
 exports.JwtAuthProvider = JwtAuthProvider;

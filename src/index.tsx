@@ -1,62 +1,65 @@
-import React, {createContext, useContext,} from 'react';
+import React, {
+  createContext, useCallback, useContext, useState,
+} from 'react';
 import jwtDecode from 'jwt-decode';
 
-interface InitialInterface {
-  keyPrefix: string,
+export interface UseJwtAuthReturn<T = any> {
+  logIn: (token: string) => void,
+  logOut: () => void,
+  token: string | null,
+  isLoggedIn: boolean,
+  userInfo?: T,
 }
 
-const jwtAuthContext = createContext<InitialInterface>({ keyPrefix: 'jwtToken' });
+const defaultState: UseJwtAuthReturn = {
+  logIn: () => null,
+  logOut: () => null,
+  token: null,
+  isLoggedIn: false,
+};
 
+const JwtAuthContext = createContext<UseJwtAuthReturn>(defaultState);
 export interface JwtAuthInterface {
   children: React.ReactNode,
   keyPrefix: string,
 }
 
 export const JwtAuthProvider: React.FC<JwtAuthInterface> = (
-    { children, keyPrefix },
-) => (
-    <jwtAuthContext.Provider value={{ keyPrefix }}>
-      {children}
-    </jwtAuthContext.Provider>
-);
+  { children, keyPrefix },
+) => {
+  const [token, setToken] = useState(localStorage.getItem(keyPrefix));
+  const [isLoggedIn, setLoggedIn] = useState(!!localStorage.getItem(keyPrefix));
+  const [userInfo, setUserInfo] = useState(() => (token ? jwtDecode(token) : {}));
 
-export interface UseJwtAuthReturn<T> {
-  logIn: (token: string) => void,
-  logOut: () => void,
-  token: string | null,
-  isLoggedIn: boolean,
-  userInfo: T,
-}
+  const logIn = useCallback((accessToken: string) => {
+    localStorage.setItem(keyPrefix, accessToken);
+    setToken(accessToken);
+    setLoggedIn(true);
+    setUserInfo(jwtDecode(accessToken));
+  }, [keyPrefix]);
 
-function useJWT<T = any>(): UseJwtAuthReturn<T> {
-  const { keyPrefix } = useContext(jwtAuthContext);
-
-  const logIn = (token: string) => {
-    localStorage.setItem(keyPrefix, token);
-  };
-
-  const logOut = () => {
+  const logOut = useCallback(() => {
     localStorage.removeItem(keyPrefix);
-  };
+    setToken(null);
+    setLoggedIn(false);
+  }, [keyPrefix]);
 
-  const getUserInfo = () => {
-    const token = localStorage.getItem(keyPrefix);
-    if (token){
-      try {
-        return jwtDecode(token)
-      } catch (e) {
-        console.error("Could not parse token: " + token)
-      }
-    }
-  };
-
-  return {
+  const initialState = {
     logIn,
     logOut,
-    token: localStorage.getItem(keyPrefix),
-    isLoggedIn: !!localStorage.getItem(keyPrefix),
-    userInfo: getUserInfo(),
+    token,
+    isLoggedIn,
+    userInfo,
   };
+  return (
+    <JwtAuthContext.Provider value={initialState}>
+      {children}
+    </JwtAuthContext.Provider>
+  );
+};
+
+function useJWT<T = any>(): UseJwtAuthReturn<T> {
+  return useContext(JwtAuthContext);
 }
 
 export default useJWT;
