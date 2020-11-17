@@ -11,5 +11,5 @@ export interface UseJwtAuthReturn<T> {
     isLoggedIn: boolean;
     userInfo: T;
 }
-declare function useJWT<T = any>(): UseJwtAuthReturn<T>;
+declare function useJWT<T = any>(keyPrefix: any): UseJwtAuthReturn<T>;
 export default useJWT;

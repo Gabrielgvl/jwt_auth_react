@@ -100,32 +100,76 @@ var lib = function (token,options) {
 var InvalidTokenError_1 = InvalidTokenError;
 lib.InvalidTokenError = InvalidTokenError_1;
 
-const jwtAuthContext = React.createContext({ keyPrefix: 'jwtToken' });
-const JwtAuthProvider = ({ children, keyPrefix }) => (React__default.createElement(jwtAuthContext.Provider, { value: { keyPrefix } }, children));
-function useJWT() {
-    const { keyPrefix } = React.useContext(jwtAuthContext);
-    const logIn = (token) => {
-        localStorage.setItem(keyPrefix, token);
-    };
-    const logOut = () => {
-        localStorage.removeItem(keyPrefix);
-    };
-    const getUserInfo = () => {
+const LOG_IN = 'LOG_IN';
+const LOG_OUT = 'LOG_OUT';
+function handleLogIn(state, { token }) {
+    const { payload: userInfo } = lib(token);
+    localStorage.setItem(state.keyPrefix, token);
+    return Object.assign(Object.assign({}, state), { isLoggedIn: true, userInfo: Object.assign({}, userInfo) });
+}
+function handleLogOut(state) {
+    localStorage.removeItem(state.keyPrefix);
+    return Object.assign(Object.assign({}, state), { isLoggedIn: false });
+}
+
+// interface InitialInterface<T> {
+//   isLoggedIn: Boolean,
+//   userInfo: T | null,
+//   token: string,
+// }
+const initialState = (keyPrefix = '') => ({
+    isLoggedIn: !!localStorage.getItem(keyPrefix),
+    userInfo: null,
+    keyPrefix,
+});
+const jwtAuthReducer = (state, action) => {
+    switch (action.type) {
+        case LOG_IN:
+            return handleLogIn(state, action.payload);
+        case LOG_OUT:
+            return handleLogOut(state);
+        default:
+            return state;
+    }
+};
+const JwtAuthContext = React.createContext({ keyPrefix: 'token' });
+const JwtAuthProvider = ({ children, keyPrefix }) => {
+    const [state, dispatch] = React.useReducer(jwtAuthReducer, initialState(keyPrefix));
+    return (
+    // @ts-ignore
+    React__default.createElement(JwtAuthContext.Provider, { value: [state, dispatch] }, children));
+};
+function useJWT(keyPrefix) {
+    const [state, dispatch] = React.useReducer(jwtAuthReducer, initialState(keyPrefix));
+    const logIn = React.useCallback((token) => {
+        dispatch({
+            type: LOG_IN,
+            payload: {
+                token,
+            },
+        });
+    }, []);
+    const logOut = React.useCallback(() => {
+        dispatch({
+            type: LOG_OUT,
+        });
+    }, []);
+    const getUserInfo = React.useCallback(() => {
         const token = localStorage.getItem(keyPrefix);
         if (token) {
             try {
                 return lib(token);
             }
             catch (e) {
-                console.error("Could not parse token: " + token);
+                console.error(`Could not parse token: ${token}`);
             }
         }
-    };
+    }, []);
     return {
         logIn,
         logOut,
         token: localStorage.getItem(keyPrefix),
-        isLoggedIn: !!localStorage.getItem(keyPrefix),
+        isLoggedIn: state.isLoggedIn,
         userInfo: getUserInfo(),
     };
 }
